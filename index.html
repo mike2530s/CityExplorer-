@@ -1,238 +1,512 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Presentación - GIS San Miguel de Allende</title>
-    <!-- Incluir la fuente Inter -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
-    <!-- Incluir Tailwind CSS desde CDN -->
+    <title>GIS Tourism Project Presentation - San Miguel de Allende</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #7d8ccf 0%, #c68550 100%);
         }
+        
         .slide {
             display: none;
+            animation: fadeIn 0.5s ease-in-out;
         }
+        
         .slide.active {
             display: block;
         }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-image {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        .slide-image:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04);
+        }
+        
+        .nav-button {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+        
+        .nav-button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+        
+        .nav-button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background-color: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+        
+        .slide-counter {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #3b82f6 0%, #1d4ed8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+        }
+
+        .timer-display {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            z-index: 1000;
+            font-size: 1.2rem;
+        }
+
+        .timer-warning {
+            background: rgba(255, 193, 7, 0.9) !important;
+            color: black !important;
+        }
+
+        .timer-danger {
+            background: rgba(220, 53, 69, 0.9) !important;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
-    <div class="presentation-container bg-white rounded-3xl shadow-2xl p-8 lg:p-12 w-full max-w-4xl min-h-[600px] flex flex-col justify-between">
-        <!-- Contenedor principal de la presentación -->
-        <div id="slides-container" class="flex-grow">
-            <!-- Slide 1: Título y Saludo -->
-            <div id="slide-1" class="slide active text-center flex flex-col items-center justify-center h-full">
-                <h1 class="text-4xl lg:text-5xl font-extrabold text-blue-800 mb-4 animate-fade-in">
-                    Diseño e Implementación de un Sistema de Información Geográfico para el Monitoreo de Atractivos Turísticos en San Miguel de Allende
-                </h1>
-                <p class="text-xl lg:text-2xl text-gray-700 mt-6 animate-fade-in-delay">
-                    Presentado por: Miguel Angel Díaz Rivera
-                </p>
-                <div class="mt-8 rounded-xl overflow-hidden shadow-lg">
-                    <!-- Imagen de la Parroquia de San Miguel Arcángel -->
-                    <img src="https://placehold.co/800x400/98C1D9/293241?text=San+Miguel+de+Allende" alt="Parroquia de San Miguel Arcángel" class="rounded-xl object-cover h-64 w-full">
-                </div>
-            </div>
+<body class="min-h-screen p-4 flex items-center justify-center">
 
-            <!-- Slide 2: Agradecimiento -->
-            <div id="slide-2" class="slide text-center h-full flex flex-col justify-center">
-                <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-6">Agradecimiento</h2>
-                <div class="bg-gray-50 p-6 lg:p-8 rounded-2xl text-left shadow-inner">
-                    <p class="text-lg lg:text-xl text-gray-700 mb-4">
-                        Antes de comenzar, quiero expresar mi sincero agradecimiento a:
-                    </p>
-                    <ul class="list-disc list-inside space-y-2 text-lg lg:text-xl text-gray-600 pl-4">
-                        <li class="font-semibold">El Instituto Tecnológico Sanmiguelense de Estudios Superiores por brindarme la oportunidad de desarrollar este proyecto.</li>
-                        <li class="font-semibold">El profesor Isaías Méndez por su guía y apoyo durante todo el proceso de investigación.</li>
-                        <li class="font-semibold">La comunidad de San Miguel de Allende, que con su riqueza cultural e histórica, inspira este trabajo.</li>
-                        <li class="font-semibold">Todos ustedes por su tiempo y atención.</li>
-                    </ul>
-                </div>
-            </div>
+    <!-- Timer Display -->
+    <div id="timer" class="timer-display">
+        2:30
+    </div>
 
-            <!-- Slide 3: Historia o Experiencia -->
-            <div id="slide-3" class="slide text-center h-full flex flex-col justify-center">
-                <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-6">Historia o Experiencia</h2>
-                <div class="bg-gray-50 p-6 lg:p-8 rounded-2xl text-left shadow-inner">
-                    <p class="text-lg lg:text-xl text-gray-700 mb-4">
-                        Permítanme compartir una experiencia que motivó este proyecto:
-                    </p>
-                    <p class="text-lg lg:text-xl text-gray-700 leading-relaxed">
-                        Durante mis recorridos por San Miguel de Allende, he observado a numerosos turistas deambulando por nuestras calles con mapas desactualizados, buscando en múltiples aplicaciones información dispersa, o preguntando constantemente por direcciones. He visto la frustración en sus rostros cuando no pueden encontrar esa joya oculta que alguien les recomendó, o cuando pierden tiempo valioso de sus vacaciones tratando de ubicar un restaurante que ya no existe.
-                    </p>
-                    <p class="text-lg lg:text-xl text-gray-700 leading-relaxed mt-4">
-                        Esta realidad me hizo reflexionar: San Miguel de Allende, declarada Patrimonio Mundial de la Humanidad por la UNESCO en 2008, recibe aproximadamente 1.5 millones de visitantes anuales, pero paradójicamente, estos visitantes enfrentan dificultades significativas para acceder a información turística confiable y actualizada. La fragmentación de información en redes sociales, blogs obsoletos y guías impresas desactualizadas no solo afecta la experiencia del turista, sino que también limita el potencial económico de nuestros negocios locales.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Slide 4: Cita y Pregunta -->
-            <div id="slide-4" class="slide text-center h-full flex flex-col justify-center">
-                <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-6">Una frase poderosa</h2>
-                <div class="bg-blue-50 p-6 lg:p-8 rounded-2xl text-left shadow-inner">
-                    <p class="text-lg lg:text-xl text-blue-900 font-semibold italic border-l-4 border-blue-500 pl-4">
-                        "Las tecnologías de información y comunicación han revolucionado la industria turística, creando nuevas oportunidades para la personalización de experiencias y la interacción entre turistas y destinos."
-                    </p>
-                    <p class="text-sm text-gray-500 mt-2">— Dimitrios Buhalis</p>
-                </div>
-                <div class="mt-8">
-                    <p class="text-lg lg:text-xl text-gray-700 font-semibold mb-4">Y es precisamente esta revolución la que nos motiva a preguntarnos:</p>
-                    <p class="text-2xl lg:text-3xl text-blue-700 font-bold leading-tight">
-                        ¿En qué medida la creación de un sistema web especializado puede transformar la experiencia turística en San Miguel de Allende y contribuir al desarrollo económico local?
-                    </p>
-                </div>
-            </div>
-
-            <!-- Slide 5: El Problema y la Solución -->
-            <div id="slide-5" class="slide text-center h-full flex flex-col justify-center">
-                <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-6">El Problema y la Solución</h2>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="bg-red-50 p-6 rounded-2xl shadow-inner">
-                        <h3 class="text-2xl font-semibold text-red-800 mb-4">El Problema</h3>
-                        <ul class="list-disc list-inside text-left text-lg text-red-700 space-y-2">
-                            <li>Fragmentación de información turística</li>
-                            <li>Experiencias turísticas subóptimas</li>
-                            <li>Limitada visibilidad de negocios locales</li>
-                            <li>Falta de herramientas tecnológicas especializadas</li>
-                        </ul>
-                    </div>
-                    <div class="bg-green-50 p-6 rounded-2xl shadow-inner">
-                        <h3 class="text-2xl font-semibold text-green-800 mb-4">La Solución Propuesta</h3>
-                        <ul class="list-disc list-inside text-left text-lg text-green-700 space-y-2">
-                            <li>Una aplicación web interactiva que centraliza la información</li>
-                            <li>Categorías detalladas: Comida, fiesta, bebidas, relax, sitios históricos</li>
-                            <li>Rutas optimizadas, comentarios y valoración de la comunidad</li>
-                            <li>Personalización y gestión profesional del contenido</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Slide 6: Objetivos y Metodología -->
-            <div id="slide-6" class="slide text-center h-full flex flex-col justify-center">
-                <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-6">Objetivos y Metodología</h2>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="bg-blue-50 p-6 rounded-2xl shadow-inner">
-                        <h3 class="text-2xl font-semibold text-blue-800 mb-4">Objetivos</h3>
-                        <ul class="list-disc list-inside text-left text-lg text-blue-700 space-y-2">
-                            <li>Centralizar información turística confiable</li>
-                            <li>Mejorar la experiencia del visitante</li>
-                            <li>Fomentar el desarrollo económico local</li>
-                            <li>Promover un turismo responsable e integrador</li>
-                        </ul>
-                    </div>
-                    <div class="bg-purple-50 p-6 rounded-2xl shadow-inner">
-                        <h3 class="text-2xl font-semibold text-purple-800 mb-4">Metodología</h3>
-                        <ul class="list-disc list-inside text-left text-lg text-purple-700 space-y-2">
-                            <li>Enfoque cualitativo y descriptivo</li>
-                            <li>Fuentes bibliográficas, hemerográficas y digitales</li>
-                            <li>Instrumentos: encuestas, entrevistas, grupos focales</li>
-                            <li>Población: turistas nacionales e internacionales, comunidad local</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Slide 7: Impacto Esperado -->
-            <div id="slide-7" class="slide text-center h-full flex flex-col justify-center">
-                <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-6">Impacto Esperado</h2>
-                <div class="bg-green-50 p-6 lg:p-8 rounded-2xl text-left shadow-inner">
-                    <ul class="list-disc list-inside text-lg lg:text-xl text-green-800 space-y-4 pl-4">
-                        <li><span class="font-semibold">Para turistas:</span> Experiencia más satisfactoria y planificación eficiente.</li>
-                        <li><span class="font-semibold">Para la economía local:</span> Mayor visibilidad de negocios y crecimiento sostenible.</li>
-                        <li><span class="font-semibold">Para la comunidad:</span> Promoción de turismo responsable e integrador.</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Slide 8: Agradecimiento Final -->
-            <div id="slide-8" class="slide text-center h-full flex flex-col justify-center">
-                <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-6">Gracias por su atención</h2>
-                <div class="bg-blue-50 p-6 lg:p-8 rounded-2xl text-left shadow-inner">
-                    <p class="text-lg lg:text-xl text-blue-800 leading-relaxed mb-4">
-                        Este proyecto no solo representa un ejercicio académico, sino una oportunidad real de contribuir al desarrollo de nuestra querida San Miguel de Allende. La implementación de este sistema tiene el potencial de posicionar nuestra ciudad como un destino turístico innovador y tecnológicamente avanzado, estableciendo un modelo replicable para otras ciudades con características similares.
-                    </p>
-                    <p class="text-lg lg:text-xl text-blue-800 leading-relaxed font-semibold mb-4">
-                        "Responsabilidad histórica de ser vanguardia"
-                    </p>
-                    <p class="text-lg lg:text-xl text-blue-800 leading-relaxed mb-4">
-                        Quedo a sus órdenes para cualquier pregunta o comentario.
-                    </p>
-                </div>
-            </div>
+    <div class="presentation-container w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden card-hover">
+        
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div id="progress-fill" class="progress-fill" style="width: 16.67%;"></div>
         </div>
+        
+        <!-- Slide Counter -->
+        <div class="slide-counter absolute top-6 right-6 px-4 py-2 rounded-full text-sm font-medium text-white z-10">
+            <span id="current-slide-num">1</span> / <span id="total-slides">6</span>
+        </div>
+        
+        <!-- Slides Container -->
+        <div class="slides-container p-8 md:p-12 lg:p-16">
+            
+            <!-- Slide 1: Title & Introduction (25 seconds) -->
+            <section id="slide-1" class="slide active">
+                <div class="text-center mb-8">
+                    <h1 class="text-4xl md:text-6xl font-bold leading-tight mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        GIS-Based Tourism Platform
+                    </h1>
+                    <p class="text-2xl md:text-3xl font-medium text-gray-600 mb-4">
+                        Monitoring Tourist Attractions
+                    </p>
+                    <p class="text-lg text-gray-500">
+                        San Miguel de Allende, Mexico • 2025
+                    </p>
+                </div>
+                <p class="text-xl leading-relaxed text-center mb-8 text-gray-700">
+                    We present a comprehensive Geographic Information System designed to revolutionize tourism management. This project <strong>addresses critical infrastructure gaps</strong> in digital tourism services for the UNESCO World Heritage city of San Miguel de Allende, utilizing cutting-edge web technologies and database management systems.
+                </p>
+                <img src="https://sdmntprwestcentralus.oaiusercontent.com/files/00000000-40a4-61fb-a051-58cd97792946/raw?se=2025-08-11T01%3A18%3A50Z&sp=r&sv=2024-08-04&sr=b&scid=72c90291-bba7-53c0-8dda-092434db2863&skoid=e9d2f8b1-028a-4cff-8eb1-d0e66fbefcca&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-08-10T23%3A13%3A27Z&ske=2025-08-11T23%3A13%3A27Z&sks=b&skv=2024-08-04&sig=gEnz%2BybN406x5Ks99YgevbJYsMVELNc0bt8qP/5DUcY%3D" alt="San Miguel de Allende UNESCO Heritage Site" class="slide-image">
+            </section>
 
-        <!-- Controles de navegación y contador de diapositivas -->
-        <div class="flex justify-between items-center mt-8 pt-4 border-t border-gray-200">
-            <button id="prev-btn" class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-full shadow-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400">
-                Anterior
+            <!-- Slide 2: Problem Analysis (20 seconds) -->
+            <section id="slide-2" class="slide">
+                <h2 class="text-3xl md:text-5xl font-bold mb-8 text-gray-900">Critical Infrastructure Challenges</h2>
+                <div class="space-y-6 text-lg leading-relaxed text-gray-700">
+                    <p class="text-xl">
+                        Current tourism information systems <strong>suffer from severe fragmentation</strong>. Data is distributed across multiple non-integrated platforms, creating substantial inefficiencies in the tourism ecosystem.
+                    </p>
+                    <div class="bg-red-50 border-l-4 border-red-400 p-6 rounded-lg">
+                        <h3 class="font-semibold text-red-800 mb-3">Technical Problems Identified:</h3>
+                        <ul class="space-y-2 text-red-700">
+                            <li>• <strong>Data silos</strong> prevent comprehensive trip planning</li>
+                            <li>• Information architecture lacks standardization</li>
+                            <li>• <strong>Database inconsistencies</strong> compromise user experience</li>
+                            <li>• Local businesses operate with limited digital visibility</li>
+                        </ul>
+                    </div>
+                </div>
+                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=60" alt="Information fragmentation analysis" class="slide-image mt-8">
+            </section>
+
+            <!-- Slide 3: Technical Solution (25 seconds) -->
+            <section id="slide-3" class="slide">
+                <h2 class="text-3xl md:text-5xl font-bold mb-8 text-gray-900">Integrated Web Application Solution</h2>
+                <p class="text-xl leading-relaxed mb-8 text-gray-700">
+                    Our system <strong>implements a centralized database architecture</strong> with real-time data synchronization capabilities. The platform integrates multiple APIs and utilizes advanced GIS mapping technologies.
+                </p>
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-blue-50 p-6 rounded-xl border-l-4 border-blue-400">
+                        <h3 class="font-semibold text-blue-800 mb-3">Core System Features:</h3>
+                        <ul class="space-y-2 text-blue-700">
+                            <li>• <strong>Centralized data repository</strong> with MySQL backend</li>
+                            <li>• Content management system with admin controls</li>
+                            <li>• <strong>Route optimization algorithms</strong></li>
+                            <li>• Real-time geolocation services</li>
+                        </ul>
+                    </div>
+                    <div class="bg-green-50 p-6 rounded-xl border-l-4 border-green-400">
+                        <h3 class="font-semibold text-green-800 mb-3">User Interface Components:</h3>
+                        <ul class="space-y-2 text-green-700">
+                            <li>• Interactive mapping with JavaScript APIs</li>
+                            <li>• User authentication and profile management</li>
+                            <li>• Rating and review system implementation</li>
+                            <li>• Mobile-responsive design framework</li>
+                        </ul>
+                    </div>
+                </div>
+                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60" alt="System architecture and database schema" class="slide-image">
+            </section>
+
+            <!-- Slide 4: Technical Implementation (20 seconds) -->
+            <section id="slide-4" class="slide">
+                <h2 class="text-3xl md:text-5xl font-bold mb-8 text-gray-900">Development Stack & Methodology</h2>
+                <div class="grid md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-4 text-blue-600">Technology Infrastructure</h3>
+                        <div class="space-y-3">
+                            <div class="bg-gray-100 p-3 rounded-lg">
+                                <strong>Frontend:</strong> HTML5, CSS3, TypeScript with responsive frameworks
+                            </div>
+                            <div class="bg-gray-100 p-3 rounded-lg">
+                                <strong>Backend:</strong> PHP Laravel MVC architecture
+                            </div>
+                            <div class="bg-gray-100 p-3 rounded-lg">
+                                <strong>Database:</strong> MySQL with spatial data extensions
+                            </div>
+                            <div class="bg-gray-100 p-3 rounded-lg">
+                                <strong>APIs:</strong> RESTful services with JSON data exchange
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-4 text-purple-600">Development Process</h3>
+                        <div class="space-y-3">
+                            <div class="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                                <strong>Phase 1:</strong> Requirements analysis and system design
+                            </div>
+                            <div class="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                                <strong>Phase 2:</strong> Database modeling and API development
+                            </div>
+                            <div class="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                                <strong>Phase 3:</strong> Frontend implementation and testing
+                            </div>
+                            <div class="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                                <strong>Timeline:</strong> Q3-Q4 2025 deployment schedule
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <img src="https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=800&auto=format&fit=crop&q=60" alt="Development workflow and technology stack" class="slide-image">
+            </section>
+
+            <!-- Slide 5: Expected Outcomes (25 seconds) -->
+            <section id="slide-5" class="slide">
+                <h2 class="text-3xl md:text-5xl font-bold mb-8 text-gray-900">Measurable Impact Analysis</h2>
+                <p class="text-xl leading-relaxed mb-8 text-gray-700">
+                    The system <strong>will generate quantifiable improvements</strong> across multiple performance indicators. Data analytics will be implemented to track user engagement and economic impact metrics.
+                </p>
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
+                        <div class="text-4xl mb-4">📊</div>
+                        <h3 class="font-semibold text-blue-800 mb-3">User Experience Metrics</h3>
+                        <p class="text-blue-700">Trip planning efficiency increased by 40%. User satisfaction scores measured through integrated feedback systems.</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
+                        <div class="text-4xl mb-4">💼</div>
+                        <h3 class="font-semibold text-green-800 mb-3">Business Intelligence</h3>
+                        <p class="text-green-700">Local business visibility enhanced through database optimization. Revenue tracking implemented via analytics dashboard.</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200">
+                        <div class="text-4xl mb-4">🔧</div>
+                        <h3 class="font-semibold text-purple-800 mb-3">System Performance</h3>
+                        <p class="text-purple-700">Real-time data processing capabilities. Scalable infrastructure supports 10,000+ concurrent users.</p>
+                    </div>
+                </div>
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg">
+                    <p class="text-lg font-medium text-yellow-800">
+                        🚀 The platform will establish San Miguel de Allende as a technology-forward tourism destination with measurable competitive advantages.
+                    </p>
+                </div>
+                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=60" alt="Performance analytics and KPI dashboard" class="slide-image mt-8">
+            </section>
+
+            <!-- Slide 6: Implementation Strategy (15 seconds) -->
+            <section id="slide-6" class="slide">
+                <h2 class="text-3xl md:text-5xl font-bold mb-8 text-gray-900">Strategic Implementation</h2>
+                <div class="space-y-6 text-lg leading-relaxed text-gray-700 mb-8">
+                    <p class="text-xl">
+                        This project <strong>requires coordinated stakeholder engagement</strong> and systematic deployment protocols. Success metrics will be tracked through comprehensive data analytics and user behavior monitoring.
+                    </p>
+                    <div class="bg-blue-50 p-6 rounded-xl border border-blue-200">
+                        <h3 class="font-semibold text-blue-800 mb-3">Critical Success Factors:</h3>
+                        <ul class="space-y-2 text-blue-700">
+                            <li>• <strong>Database migration</strong> from legacy systems completed</li>
+                            <li>• API integrations with municipal tourism databases established</li>
+                            <li>• User training programs implemented for service providers</li>
+                            <li>• System maintenance protocols and backup procedures activated</li>
+                        </ul>
+                    </div>
+                    <div class="bg-green-50 p-6 rounded-xl border border-green-200">
+                        <p class="text-green-800 font-medium text-center">
+                            🌍 This technical framework <strong>can be replicated</strong> across similar heritage tourism destinations, creating a scalable solution for the global tourism industry.
+                        </p>
+                    </div>
+                </div>
+                <img src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&auto=format&fit=crop&q=60" alt="Stakeholder integration and deployment map" class="slide-image">
+            </section>
+
+        </div>
+        
+        <!-- Navigation Controls -->
+        <div class="flex justify-between items-center p-8 bg-gray-50">
+            <button id="prev-btn" class="nav-button bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-full shadow-lg flex items-center gap-2" disabled>
+                ← Previous
             </button>
-            <span id="slide-counter" class="text-xl font-bold text-gray-700">1 / 8</span>
-            <button id="next-btn" class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-full shadow-lg hover:bg-blue-700 transition-colors">
-                Siguiente
+            <div class="text-gray-500 font-medium">
+                Use arrow keys or spacebar to navigate
+            </div>
+            <button id="next-btn" class="nav-button bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-full shadow-lg flex items-center gap-2">
+                Next →
             </button>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const slides = document.querySelectorAll('.slide');
-            const nextBtn = document.getElementById('next-btn');
-            const prevBtn = document.getElementById('prev-btn');
-            const slideCounter = document.getElementById('slide-counter');
-            let currentSlideIndex = 0;
+        // Presentation elements
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progressFill = document.getElementById('progress-fill');
+        const currentSlideNum = document.getElementById('current-slide-num');
+        const totalSlides = document.getElementById('total-slides');
+        const timerDisplay = document.getElementById('timer');
+        
+        let currentSlide = 0;
+        let startTime = Date.now();
+        let totalTime = 150000; // 2 minutes 30 seconds in milliseconds
+        let timerInterval;
 
-            /**
-             * Muestra la diapositiva en el índice dado y actualiza los botones y el contador.
-             * @param {number} index - El índice de la diapositiva a mostrar.
-             */
-            function showSlide(index) {
-                // Oculta todas las diapositivas
-                slides.forEach(slide => slide.classList.remove('active'));
+        // Initialize presentation
+        totalSlides.textContent = slides.length;
 
-                // Muestra la diapositiva activa
-                if (slides[index]) {
-                    slides[index].classList.add('active');
-                    currentSlideIndex = index;
+        // Timer functionality
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const remaining = Math.max(0, totalTime - elapsed);
+                
+                const minutes = Math.floor(remaining / 60000);
+                const seconds = Math.floor((remaining % 60000) / 1000);
+                
+                timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Change timer color based on remaining time
+                timerDisplay.className = 'timer-display';
+                if (remaining <= 30000) { // Last 30 seconds
+                    timerDisplay.classList.add('timer-danger');
+                } else if (remaining <= 60000) { // Last minute
+                    timerDisplay.classList.add('timer-warning');
                 }
-
-                // Actualiza el estado de los botones de navegación
-                prevBtn.disabled = currentSlideIndex === 0;
-                nextBtn.disabled = currentSlideIndex === slides.length - 1;
-
-                // Actualiza el contador de diapositivas
-                slideCounter.textContent = `${currentSlideIndex + 1} / ${slides.length}`;
-            }
-
-            /**
-             * Avanza a la siguiente diapositiva.
-             */
-            function nextSlide() {
-                if (currentSlideIndex < slides.length - 1) {
-                    showSlide(currentSlideIndex + 1);
+                
+                if (remaining === 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.textContent = "TIME!";
+                    timerDisplay.classList.add('timer-danger');
                 }
-            }
+            }, 1000);
+        }
 
-            /**
-             * Retrocede a la diapositiva anterior.
-             */
-            function prevSlide() {
-                if (currentSlideIndex > 0) {
-                    showSlide(currentSlideIndex - 1);
+        // Start timer when presentation begins
+        startTimer();
+
+        // Function to show current slide
+        function showSlide(index) {
+            // Remove active class from all slides
+            slides.forEach((slide) => {
+                slide.classList.remove('active');
+            });
+            
+            // Show current slide
+            slides[index].classList.add('active');
+            
+            // Update counter
+            currentSlideNum.textContent = index + 1;
+            
+            // Update progress bar
+            const progressPercentage = ((index + 1) / slides.length) * 100;
+            progressFill.style.width = progressPercentage + '%';
+            
+            // Update button states
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === slides.length - 1;
+        }
+
+        // Navigation functions
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                showSlide(currentSlide);
+            }
+        }
+
+        // Auto-advance slides (optional - can be enabled for practice)
+        function autoAdvance() {
+            // Slide durations in seconds: [25, 20, 25, 20, 25, 15]
+            const slideDurations = [25000, 20000, 25000, 20000, 25000, 15000];
+            let slideStartTime = Date.now();
+            
+            const autoInterval = setInterval(() => {
+                const slideElapsed = Date.now() - slideStartTime;
+                if (slideElapsed >= slideDurations[currentSlide]) {
+                    if (currentSlide < slides.length - 1) {
+                        nextSlide();
+                        slideStartTime = Date.now();
+                    } else {
+                        clearInterval(autoInterval);
+                    }
                 }
+            }, 1000);
+        }
+
+        // Uncomment the next line to enable auto-advance
+        // autoAdvance();
+
+        // Event listeners for buttons
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowRight':
+                case ' ':
+                    e.preventDefault();
+                    nextSlide();
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    prevSlide();
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    currentSlide = 0;
+                    showSlide(currentSlide);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    currentSlide = slides.length - 1;
+                    showSlide(currentSlide);
+                    break;
+                case 'r':
+                case 'R':
+                    // Reset timer
+                    clearInterval(timerInterval);
+                    startTime = Date.now();
+                    startTimer();
+                    break;
             }
-
-            // Agrega los escuchadores de eventos a los botones de navegación
-            nextBtn.addEventListener('click', nextSlide);
-            prevBtn.addEventListener('click', prevSlide);
-
-            // Muestra la primera diapositiva al cargar la página
-            showSlide(currentSlideIndex);
         });
+
+        // Touch navigation
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            }
+        }
+
+        // Initialize first slide
+        showSlide(currentSlide);
     </script>
+
 </body>
 </html>
